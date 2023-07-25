@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Balance
+{% endblock %}
+
+{% block main %}
+<form action="/sell" method="post">
+    <div class="mb-3">
+        <select class="form-select mx-auto w-auto" name="item">
+            <option disabled="" selected="">Items</option>
+            {% for i in x %}
+                <option value="{{ i['name'] }}">{{ i['name'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <input autocomplete="off" class="form-control mx-auto w-auto" min="0" name="cash" placeholder="cash" type="number">
+    </div>
+    <div class="mb-3">
+        <input autocomplete="off" class="form-control mx-auto w-auto" min="0" name="gold" placeholder="gold" type="number">
+    </div>
+    <button class="btn btn-primary" type="submit">Sell</button>
+</form>
+<h2></h2>
+<form action="/unlist" method="post">
+    <div class="mb-3">
+        <select class="form-select mx-auto w-auto" name="itema">
+            <option disabled="" selected="">Items</option>
+            {% for i in y %}
+                <option value="{{ i['name'] }}">{{ i['name'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Unlist</button>
+</form>
+{% if prompt == 1 %}
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <strong>Error:-</strong>{{ Error }}
+    </div>
+{% else %}
+{% endif %}
+{% endblock %}

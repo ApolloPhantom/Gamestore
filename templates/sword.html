@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    List:-
+{% endblock %}
+
+{% block main %}
+<div class="container mt-3">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Rating</th>
+          <th>Price in USD</th>
+          <th>Price in GOLD</th>
+          <th>Cart</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in x %}
+        <tr>
+          <td>{{i['name']}}</td>
+          <td>{{i['rating']}}</td>
+          <td>$ {{i['price']}}</td>
+          <td>{{i['priceg']}} G</td>
+          <td>
+            <button class="cart-btn"
+            data-id="{{ i['id'] }}"
+            data-object-id="{{ i['objectID'] }}"
+            data-price="{{ i['price'] }}"
+            data-priceg="{{ i['priceg'] }}">Cart</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const cartButtons = document.querySelectorAll('.cart-btn');
+
+        cartButtons.forEach(button => {
+          button.addEventListener('click', event => {
+            const id = button.dataset.id;
+            const objectId = button.dataset.objectId;
+            const price = button.dataset.price;
+            const priceg = button.dataset.priceg;
+
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/store', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+              if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+
+                const response = JSON.parse(xhr.responseText);
+                console.log(response);
+
+                button.textContent = 'Carted';
+              }
+            };
+            xhr.send(JSON.stringify({ id: id, objectId: objectId,price: price,priceg: priceg }));
+          });
+          });
+        });
+      </script>
+  </div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    List:-
+{% endblock %}
+
+{% block main %}
+<div class="container mt-3">
+    <h2>Press reload after uncarting to see changes</h2>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Rating</th>
+          <th>Price in USD</th>
+          <th>Price in GOLD</th>
+          <th>Cart</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in x %}
+        <tr>
+          <td>{{i['name']}}</td>
+          <td>{{i['rating']}}</td>
+          <td>$ {{i['price']}}</td>
+          <td>{{i['priceg']}} G</td>
+          <td>
+            <button class="cart-btn"
+            data-id="{{ i['id'] }}"
+            data-object-id="{{ i['objectID'] }}"
+            data-price="{{ i['price'] }}"
+            data-priceg="{{ i['priceg'] }}"
+            data-state="carted">Carted</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+            <td class="border-0 fw-bold text-end" colspan="4">Cash:-</td>
+            <td class="border-0 w-bold text-end">$ {{cash}}</td>
+        </tr>
+        <tr>
+            <td class="border-0 fw-bold text-end" colspan="4">Gold:-</td>
+            <td class="border-0 w-bold text-end">{{cashg}} G</td>
+        </tr>
+    </tfoot>
+    </table>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const cartButtons = document.querySelectorAll('.cart-btn');
+
+        cartButtons.forEach(button => {
+          button.addEventListener('click', event => {
+            const id = button.dataset.id;
+            const objectId = button.dataset.objectId;
+            const price = button.dataset.price;
+            const priceg = button.dataset.priceg;
+            const state = button.dataset.state;
+
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/uncart', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+              if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+
+                const response = JSON.parse(xhr.responseText);
+                console.log(response);
+
+                if (state === 'carted') {
+            button.textContent = 'UnCarted';
+            button.dataset.state = 'uncarted';
+                } else if (state === 'uncarted') {
+            button.textContent = 'Carted';
+            button.dataset.state = 'carted';
+                }
+
+                  location.reload();
+
+
+
+              }
+            };
+            xhr.send(JSON.stringify({ id: id, objectId: objectId,price: price,priceg: priceg }));
+          });
+          });
+        });
+      </script>
+  </div>
+  <div class="d-grid gap-3">
+  <form action="/cart">
+    <button class= "btn btn-outline-secondary btn-block" type="submit">Reload</button>
+  </form>
+  <form action="/ccheckout" method="post">
+      <button class= "btn btn-outline-secondary btn-block" type="submit">Confirm Purchase with cash</button>
+  </form>
+  <form action="/gcheckout" method="post">
+    <button class= "btn btn-outline-secondary btn-block" type="submit">Confirm Purchase with gold</button>
+  </form>
+  </div>
+  {% if prompt == 1 %}
+<div class="alert alert-danger alert-dismissible">
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <strong>Error:-</strong>{{ Error }}
+</div>
+  {% elif prompt == 2 %}
+<div class="alert alert-success alert-dismissible">
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <strong>Error:-</strong>{{ Error }}
+</div>
+{% else %}
+{% endif %}
+{% endblock %}
